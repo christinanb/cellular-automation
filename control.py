@@ -20,7 +20,7 @@ class PedestrianController:
     @param obstacles_loc: Locations of the obstacles. 
                             (x, y): x in [1, width], y in [1, height].
     """
-    def __init__(self, width, height, pedestrians_loc, targets_loc, obstacles_loc, speed, n_timesteps, devour=False, dijkstra=False):
+    def __init__(self, width, height, pedestrians_loc, targets_loc, obstacles_loc, speed, n_timesteps, devour=False, dijkstra=False, verbose_visualization=False):
         self.field = Field(width, height)
         self.pedestrians = [Pedestrian(self.field.cells[x, y], speed) for (x, y) in pedestrians_loc]
         self.targets = [Target(self.field.cells[x, y]) for (x, y) in targets_loc]
@@ -31,7 +31,7 @@ class PedestrianController:
         self.devour = devour
         self.target_cost_calculation = CostUpdate.dijkstra if dijkstra else CostUpdate.distance
 
-        self.field_visual = FieldVisual(width, height)
+        self.field_visual = FieldVisual(width, height, verbose_visualization)
     
     """
     Initialize the costs of targets and obstacles since these values do not change within the course of a simulation.
@@ -58,11 +58,17 @@ class PedestrianController:
     This method is to be executed per time frame only by the method run().
     """
     def _update(self):
+        remove_pedestrians = []
         for p in self.pedestrians:
             optimal_neighbor = self.find_optimal_neighbor(p)
             p.move_in_time(optimal_neighbor)
+            # devour pedestrians who have reached a target
+            if self.devour and p.cell in [t.cell for t in self.targets]:
+                remove_pedestrians.append(p)
+        if len(remove_pedestrians) > 0:
+            self.pedestrians = [p for p in self.pedestrians if p not in remove_pedestrians]
         self.timestep += 1
-        self.field_visual.draw_update(self.pedestrians, self.obstacles, self.targets)
+        self.field_visual.draw_update(self.field, self.pedestrians, self.obstacles, self.targets)
 
     """
     Find the best reachable neighbor for pedestrian p according to the calculated cost-functions.
