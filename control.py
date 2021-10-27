@@ -1,14 +1,26 @@
 import numpy as np
 from environment import *
 from units import *
-from visual import FieldVisual
+from visual import *
 
-'''
-Controls the movement of all pedestrians in the Field.
-'''
+"""
+Controls the state of the Field.
+"""
 class PedestrianController:
 
-    def __init__(self, width, height, pedestrians_loc, targets_loc, obstacles_loc, speed, n_timesteps, devour=False):
+    """
+    Initialize the state of the Field.
+
+    @param width: x-dimension of the Field.
+    @param height: y-dimension of the Field.
+    @param pedestrians_loc: Starting-Locations of the pedestrians.
+                            (x, y): x in [1, width], y in [1, height].
+    @param targets_loc: Locations of the targets. 
+                            (x, y): x in [1, width], y in [1, height].
+    @param obstacles_loc: Locations of the obstacles. 
+                            (x, y): x in [1, width], y in [1, height].
+    """
+    def __init__(self, width, height, pedestrians_loc, targets_loc, obstacles_loc, speed, n_timesteps, devour=False, dijkstra=False):
         self.field = Field(width, height)
         self.pedestrians = [Pedestrian(self.field.cells[x, y], speed) for (x, y) in pedestrians_loc]
         self.targets = [Target(self.field.cells[x, y]) for (x, y) in targets_loc]
@@ -17,55 +29,102 @@ class PedestrianController:
         self.n_timesteps = n_timesteps
         self.timestep = 0
         self.devour = devour
+        self.target_cost_calculation = CostUpdate.dijkstra if dijkstra else CostUpdate.distance
 
         self.field_visual = FieldVisual(width, height)
     
-    '''
+    """
     Initialize the costs of targets and obstacles since these values do not change within the course of a simulation.
-    '''
+    Calculate targettt-related costs according to selected target cost-calculation.
+    """
     def init_costs(self):
-        obstacle_cost = 10000
+        obstacle_cost = self.field.width * self.field.height * 2
 
-        for cell in self.field.cells.flatten():
-            for target in self.targets:
-                cell.static_cost += self.cost_function(np.linalg.norm(cell.loc - target.cell.loc))
-            for obstacle in self.obstacles:
-                obstacle.cell.static_cost += obstacle_cost
+        for obstacle in self.obstacles:
+            obstacle.cell.static_cost = obstacle_cost
 
-    '''
-    The cost-function used for the targets.
-    '''
-    def cost_function(self, dist):
-        return dist
+        for target in self.targets:
+            self.target_cost_calculation(target.cell, self.field)
 
+    """
+    Run the simulation.
+    """
     def run(self):
         while True:
-            self.update()
+            self._update()
 
-    def update(self):
+    """
+    Update the simulation once.
+    This method is to be executed per time frame only by the method run().
+    """
+    def _update(self):
         for p in self.pedestrians:
             optimal_neighbor = self.find_optimal_neighbor(p)
-            p.move(optimal_neighbor)
+            p.move_in_time(optimal_neighbor)
         self.timestep += 1
         self.field_visual.draw_update(self.pedestrians, self.obstacles, self.targets)
 
-    '''
-    Find the best reachable neighbor according to the calculated cost-functions
-    '''
-    def find_optimal_neighbor(self, p):
-        avail_neighbor_pedestrian_costs = p.calc_pedestrian_cost(self.pedestrians)
+    """
+    Find the best reachable neighbor for pedestrian p according to the calculated cost-functions.
+
+    @param pedestrian: Pedestrian to find optimal neighbor-cell for next movement.
+    """
+    def find_optimal_neighbor(self, pedestrian):
+        avail_neighbor_pedestrian_costs = pedestrian.calc_pedestrian_cost(self.pedestrians)
         min_neighbor_cost = None
         optimal_neighbor = None
-        for i, neighbor in enumerate(p.cell.get_avail_neighbors()):
+        for i, neighbor in enumerate(pedestrian.cell.get_avail_neighbors()):
             neighbor_cost = neighbor.static_cost + avail_neighbor_pedestrian_costs[i]
             if min_neighbor_cost is None or neighbor_cost < min_neighbor_cost:
                 min_neighbor_cost = neighbor_cost
                 optimal_neighbor = neighbor
         return optimal_neighbor
 
+"""
+Specifies various strategies on how to calculate the cost of targets.
+Assigns them in-place.
+"""
+class CostUpdate:
+
+    """
+    Calculates the distance-cost purely depending on the euclidian distance from the target cell.
+
+    @param target: Cell to calculate cost from.
+    @param field: Field to operate on.
+    """
+    def distance(target: Cell, field):
+        for cell in field.cells.flatten():
+            cell.static_cost += np.linalg.norm(cell.loc - target.loc)
+
+    """
+    Calculates the distance-cost according to the number of steps needed to reach the target.
+
+    @param target: Cell to calculate cost from.
+    @param field: Field to operate on.
+    """
+    def dijkstra(target: Cell, field):
+        steps = 0
+        visited_cells = [target]
+        border_cells = [target]
+        while len(border_cells) > 0:
+            new_border_cells = []
+            for cell in border_cells:
+                for n in cell.get_avail_neighbors():
+                    if n not in new_border_cells and n.static_cost == 0:
+                        new_border_cells.append(n)
+                        visited_cells.append(n)
+                        n.static_cost = steps+1
+            border_cells = new_border_cells
+            steps += 1
+
+
+
 # circle starting-point, exercise 4
 controller = PedestrianController(50, 50, [(5, 25), (25, 5), (33, 7),
-                                    (7, 33), (10, 12)], [(25, 25)], [(20, 23), (20, 24), (20, 25)], 1.0, 100)
+                                    (7, 33), (10, 12)], [(25, 25)], [(20, 23), (20, 24), (20, 25), (20, 26), (20, 27)], 1.0, 100)
 controller.init_costs()
 controller.run()
+#while True:
+#    controller.field_visual.visDebug(controller.field)
+
 
