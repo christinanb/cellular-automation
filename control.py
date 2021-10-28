@@ -62,8 +62,10 @@ class PedestrianController:
             optimal_neighbor = self.find_optimal_neighbor(p)
             p.move_in_time(optimal_neighbor)
             # devour pedestrians who have reached a target
-            if self.devour and p.cell in [t.cell for t in self.targets]:
-                remove_pedestrians.append(p)
+            if p.cell in [t.cell for t in self.targets]:
+                print("Elapsed time:", time.time() - p.first_movement_timestamp,  "s")
+                if self.devour:
+                    remove_pedestrians.append(p)
         if len(remove_pedestrians) > 0:
             self.pedestrians = [p for p in self.pedestrians if p not in remove_pedestrians]
         self.field_visual.draw_update(self.field, self.pedestrians, self.obstacles, self.targets)
@@ -107,26 +109,28 @@ class CostUpdate:
     @param field: Field to operate on.
     """
     def dijkstra(target: Cell, field):
-        steps = 0
         visited_cells = [target]
-        border_cells = [target]
+        border_cells = [(target, 1)]
         while len(border_cells) > 0:
             new_border_cells = []
-            for cell in border_cells:
+            for cell, steps in border_cells:
                 for n in cell.get_avail_neighbors():
                     if n not in new_border_cells and n.static_cost == 0:
-                        new_border_cells.append(n)
                         visited_cells.append(n)
-                        n.static_cost = steps+1
+                        travel_cost = 1
+                        if not any(n.loc == cell.loc):
+                            travel_cost = np.sqrt(2)
+                        n.static_cost = steps + travel_cost
+                        new_border_cells.append((n, steps + travel_cost))
             border_cells = new_border_cells
             steps += 1
 
 
 
 # circle starting-point, exercise 4
-controller = PedestrianController(50, 50, [(5, 25), (25, 5), (33, 7),
-                                    (7, 33), (10, 12)], [(25, 25)], [(20, 23), (20, 24), (20, 25), 
-                                    (20, 26), (20, 27)], 3.0, 10000, dijkstra=True, verbose_visualization=True)
+controller = PedestrianController(50, 50, [(5, 25)],#, (25, 5), (33, 7), (7, 33), (10, 12)], 
+                                    [(25, 25)], [(20, 23), (20, 24), (20, 25), 
+                                    (20, 26), (20, 27)], 3.0, 10000, dijkstra=True, devour=True, verbose_visualization=True)
 controller.init_costs()
 controller.run()
 
