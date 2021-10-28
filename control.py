@@ -37,7 +37,7 @@ class PedestrianController:
     Calculate targettt-related costs according to selected target cost-calculation.
     """
     def init_costs(self):
-        obstacle_cost = self.field.width * self.field.height * 2
+        obstacle_cost = 1000000000
 
         for obstacle in self.obstacles:
             obstacle.cell.static_cost = obstacle_cost
@@ -111,21 +111,36 @@ class CostUpdate:
     def dijkstra(target: Cell, field):
         visited_cells = [target]
         border_cells = [(target, 1)]
+        target.static_cost = 1
         while len(border_cells) > 0:
             new_border_cells = []
-            for cell, steps in border_cells:
+            new_border_cells_costs = []
+            for cell, parent_cost in border_cells:
                 for n in cell.get_avail_neighbors():
-                    if n not in new_border_cells and n.static_cost == 0:
-                        visited_cells.append(n)
-                        travel_cost = 1
-                        if not any(n.loc == cell.loc):
-                            travel_cost = np.sqrt(2)
-                        n.static_cost = steps + travel_cost
-                        new_border_cells.append((n, steps + travel_cost))
-            border_cells = new_border_cells
-            steps += 1
+                    if not n in visited_cells and n.static_cost < 1000000000:
+                        travel_cost = np.linalg.norm(n.loc - cell.loc)
+                        costs = np.array([n.static_cost, parent_cost + travel_cost])
+
+                        n.static_cost = np.min(costs[costs > 0]) # if a neighbor offers less cost, update cost to minimum
+                        if n in new_border_cells:
+                            new_border_cells_costs[new_border_cells.index(n)] = n.static_cost
+                        else:
+                            new_border_cells.append(n)
+                            new_border_cells_costs.append(n.static_cost)
+            visited_cells.extend(new_border_cells)
+            border_cells = list(zip(new_border_cells, new_border_cells_costs))
 
 
 
+<<<<<<< HEAD
 
+=======
+# circle starting-point, exercise 4
+# task 1
+controller = PedestrianController(50, 50, [(5, 20)],#, (25, 5), (33, 7), (7, 33), (10, 12)], 
+                                    [(25, 25), (25, 14)], [(20, 23), (20, 25), 
+                                    (20, 26), (20, 27)], 3.0, 10000, dijkstra=True, devour=True, verbose_visualization=True)
+controller.init_costs()
+controller.run()
+>>>>>>> 5420327454afb1da889d6ab569d359cd57df0f1f
 
