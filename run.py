@@ -1,5 +1,6 @@
 from control import *
-
+import os
+import sys
 
 def runsim(filename):
     """
@@ -9,10 +10,11 @@ def runsim(filename):
     """
     
     infile = open(filename, 'r')
-    for line in infile:
+    for line in infile[5:]:
         # Typical line: variable = value
         variable, value = line.split('=')
-        variable = variable.strip()  # remove leading/trailing blanks
+        variable = variable.strip() 
+        
         if variable == 'width':
             width = int(value)
         elif variable == 'height':
