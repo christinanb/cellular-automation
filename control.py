@@ -131,16 +131,3 @@ class CostUpdate:
             border_cells = list(zip(new_border_cells, new_border_cells_costs))
 
 
-
-<<<<<<< HEAD
-
-=======
-# circle starting-point, exercise 4
-# task 1
-controller = PedestrianController(50, 50, [(5, 20)],#, (25, 5), (33, 7), (7, 33), (10, 12)], 
-                                    [(25, 25), (25, 14)], [(20, 23), (20, 25), 
-                                    (20, 26), (20, 27)], 3.0, 10000, dijkstra=True, devour=True, verbose_visualization=True)
-controller.init_costs()
-controller.run()
->>>>>>> 5420327454afb1da889d6ab569d359cd57df0f1f
-
