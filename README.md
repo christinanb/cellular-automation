@@ -2,8 +2,9 @@
 To run the simulation, type in the following into Jupyter notebook:
 ```shell
 from run import *
-runsim('test.dat')
+from Test_Cases import *
+runsim('task1.dat')
 ```
 
-Replace the file 'test.dat' with the desired input parameter file located in the "Test Cases Folder" in this project's repository
+Replace the file 'task1.dat' with the desired input parameter file located in the "Test_Cases" Folder in this project's repository
 
