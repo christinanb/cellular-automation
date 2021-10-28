@@ -48,13 +48,16 @@ class Pedestrian:
     @param pedestrians: Other pedestrians which influence the cost of neighboring fields.
     @param r_max: Parameter for distribution of cost around other pedestrians.
     """
-    def calc_pedestrian_cost(self, pedestrians, r_max=0.9):
+    def calc_pedestrian_cost(self, pedestrians, r_max=2):
         neighbor_pedestrian_cost = np.zeros(len(self.cell.get_avail_neighbors()))
         for i, neighbor_cell in enumerate(self.cell.get_avail_neighbors()):
             for p in pedestrians:
                 if p is not self:
                     dist = np.linalg.norm(neighbor_cell.loc - p.cell.loc)
-                    neighbor_pedestrian_cost[i] += np.exp(1/(dist**2 - r_max**2))
+                    if dist == 0:
+                        neighbor_pedestrian_cost[i] += 100000
+                    elif dist < r_max:
+                        neighbor_pedestrian_cost[i] += np.exp(1/(dist**2 - r_max**2))
         return neighbor_pedestrian_cost
 
 """
@@ -64,7 +67,7 @@ class Target:
 
     """
     Create a target at given cell.
-    
+
     @param cell: Cell on which to spawn target.
     """
     def __init__(self, cell):

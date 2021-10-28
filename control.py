@@ -20,14 +20,13 @@ class PedestrianController:
     @param obstacles_loc: Locations of the obstacles. 
                             (x, y): x in [1, width], y in [1, height].
     """
-    def __init__(self, width, height, pedestrians_loc, targets_loc, obstacles_loc, speed, n_timesteps, devour=False, dijkstra=False, verbose_visualization=False):
+    def __init__(self, width, height, pedestrians_loc, targets_loc, obstacles_loc, speed, max_timesteps, devour=False, dijkstra=False, verbose_visualization=False):
         self.field = Field(width, height)
         self.pedestrians = [Pedestrian(self.field.cells[x, y], speed) for (x, y) in pedestrians_loc]
         self.targets = [Target(self.field.cells[x, y]) for (x, y) in targets_loc]
         self.obstacles = [Obstacle(self.field.cells[x, y]) for (x, y) in obstacles_loc]
         self.speed = speed
-        self.n_timesteps = n_timesteps
-        self.timestep = 0
+        self.max_timesteps = max_timesteps
         self.devour = devour
         self.target_cost_calculation = CostUpdate.dijkstra if dijkstra else CostUpdate.distance
 
@@ -67,7 +66,6 @@ class PedestrianController:
                 remove_pedestrians.append(p)
         if len(remove_pedestrians) > 0:
             self.pedestrians = [p for p in self.pedestrians if p not in remove_pedestrians]
-        self.timestep += 1
         self.field_visual.draw_update(self.field, self.pedestrians, self.obstacles, self.targets)
 
     """
@@ -127,10 +125,8 @@ class CostUpdate:
 
 # circle starting-point, exercise 4
 controller = PedestrianController(50, 50, [(5, 25), (25, 5), (33, 7),
-                                    (7, 33), (10, 12)], [(25, 25)], [(20, 23), (20, 24), (20, 25), (20, 26), (20, 27)], 1.0, 100)
+                                    (7, 33), (10, 12)], [(25, 25)], [(20, 23), (20, 24), (20, 25), 
+                                    (20, 26), (20, 27)], 3.0, 10000, dijkstra=True, verbose_visualization=True)
 controller.init_costs()
 controller.run()
-#while True:
-#    controller.field_visual.visDebug(controller.field)
-
 
