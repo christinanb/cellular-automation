@@ -127,10 +127,5 @@ class CostUpdate:
 
 
 
-# circle starting-point, exercise 4
-controller = PedestrianController(50, 50, [(5, 25)],#, (25, 5), (33, 7), (7, 33), (10, 12)], 
-                                    [(25, 25)], [(20, 23), (20, 24), (20, 25), 
-                                    (20, 26), (20, 27)], 3.0, 10000, dijkstra=True, devour=True, verbose_visualization=True)
-controller.init_costs()
-controller.run()
+
 
