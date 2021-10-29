@@ -20,6 +20,7 @@ class FieldVisual:
         self.height = height
         self.visualize_cost = visualize_cost
         self.box_size = box_size
+        self.is_running = True
 
         pygame.init()
         self.screen = pygame.display.set_mode((width*box_size, height*box_size))
@@ -70,10 +71,10 @@ class FieldVisual:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-                exit
+                self.is_running = False
         try:
             pygame.display.update()
         except:
             pygame.quit()
-            exit
+            self.is_running = False
 
