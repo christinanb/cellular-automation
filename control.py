@@ -1,7 +1,7 @@
 import numpy as np
 from environment import *
 from units import *
-from visual import *
+import visual
 
 """
 Controls the state of the Field.
@@ -30,7 +30,7 @@ class PedestrianController:
         self.devour = devour
         self.target_cost_calculation = CostUpdate.dijkstra if dijkstra else CostUpdate.distance
 
-        self.field_visual = FieldVisual(width, height, verbose_visualization)
+        self.field_visual = visual.FieldVisual(width, height, verbose_visualization)
     
     """
     Initialize the costs of targets and obstacles since these values do not change within the course of a simulation.
@@ -49,7 +49,7 @@ class PedestrianController:
     Run the simulation.
     """
     def run(self):
-        while True:
+        while self.field_visual.is_running:
             self._update()
 
     """

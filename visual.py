@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pygame 
+import sys
 
 """
 Visualization of the Field and its objects.
@@ -19,6 +20,7 @@ class FieldVisual:
         self.height = height
         self.visualize_cost = visualize_cost
         self.box_size = box_size
+        self.is_running = True
 
         pygame.init()
         self.screen = pygame.display.set_mode((width*box_size, height*box_size))
@@ -69,5 +71,10 @@ class FieldVisual:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-        pygame.display.update()
+                self.is_running = False
+        try:
+            pygame.display.update()
+        except:
+            pygame.quit()
+            self.is_running = False
 
