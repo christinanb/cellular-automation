@@ -20,7 +20,7 @@ def runsim(filename):
         
        # Throws an exception if all of the required parameters are not available in dat file 
         if len(value)==0:
-            sys.exit('listofitems not long enough')
+            sys.exit('Not enough input parameters are provided. Simulation cannot run. Please update the prameter file.')
      
         #sets all variables required to run the controller function
         if variable == 'width':
