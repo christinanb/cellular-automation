@@ -70,10 +70,10 @@ class FieldVisual:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-                sys.exit()
+                exit
         try:
             pygame.display.update()
         except:
             pygame.quit()
-            sys.exit()
+            exit
 
