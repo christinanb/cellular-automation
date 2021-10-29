@@ -16,7 +16,13 @@ def runsim(filename):
         # Typical line: variable = value
         variable, value = line.split('=')
         variable = variable.strip()
-      
+        value = value.strip()
+        
+       # Throws an exception if all of the required parameters are not available in dat file 
+        if len(value)==0:
+            sys.exit('listofitems not long enough')
+     
+        #sets all variables required to run the controller function
         if variable == 'width':
             width = int(value)
         elif variable == 'height':
@@ -37,13 +43,13 @@ def runsim(filename):
             dijkstra = bool(value)
         elif variable == 'verbose_visualization':
             verbose_visualization = bool(value)
-    
+        print(len(value))
         
         
     infile.close()
    
     
-    
+
     controller = PedestrianController(width, height, pedestrian_loc,  
                                     targets_loc, obstacles_loc, speed, max_timesteps,devour, dijkstra, verbose_visualization)
     controller.init_costs()
