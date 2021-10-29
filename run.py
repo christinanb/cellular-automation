@@ -1,4 +1,5 @@
 from control import *
+import sys
 
 
 def runsim(filename):
@@ -9,27 +10,23 @@ def runsim(filename):
     """
     
     infile = open(filename, 'r')
+   
+    
     for line in infile:
         # Typical line: variable = value
         variable, value = line.split('=')
-        variable = variable.strip() 
-        
+        variable = variable.strip()
+      
         if variable == 'width':
             width = int(value)
         elif variable == 'height':
             height = int(value)
         elif variable == 'pedestrians_location':
-            pedestrian_loc=list(eval(value)) 
-            if len(pedestrian_loc)==1:
-               pedestrian_loc=[eval(value)]
+            pedestrian_loc=eval(value)
         elif variable == 'targets_location':
-            targets_loc=list(eval(value))
-            if len(targets_loc)==1:
-               targets_loc=[eval(value)]
+            targets_loc=eval(value)
         elif variable == 'obstacles_location':
-            obstacles_loc=list(eval(value))
-            if len(obstacles_loc)==1:
-               obstacles_loc=[eval(value)]
+            obstacles_loc=eval(value)
         elif variable == 'speed':
             speed = float(value)
         elif variable == 'max_timesteps':
@@ -40,8 +37,12 @@ def runsim(filename):
             dijkstra = bool(value)
         elif variable == 'verbose_visualization':
             verbose_visualization = bool(value)
+    
+        
+        
     infile.close()
-
+   
+    
     
     controller = PedestrianController(width, height, pedestrian_loc,  
                                     targets_loc, obstacles_loc, speed, max_timesteps,devour, dijkstra, verbose_visualization)
