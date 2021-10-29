@@ -67,30 +67,35 @@ def runsim(filename):
         
         elif variable == 'devour':
             if value is not None:
-                devour = bool(value)
+                if value == 'True':
+                    devour = bool(1)
+                else:
+                    devour=bool(0)
             else:
                 sys.exit('The parameter File must set disapearing taget to True or False')
         
         elif variable == 'dijkstra':
             if value is not None:
-                dijkstra = bool(value)
+                if value == 'True':
+                        dijkstra = bool(1)
+                else:
+                    dijkstra=bool(0)
             else:
                 sys.exit('The parameter File must set the dijkstra algorithm to True or False')
             
             
         elif variable == 'verbose_visualization':
             if value is not None:
-                verbose_visualization = bool(value)
+                if value == 'True':
+                        verbose_visualization = bool(1)
+                else:
+                    verbose_visualization=bool(0)
             else:
                 sys.exit('The parameter File must set the visualisation to True or False')
             
-    
-        
-        
     infile.close()
    
-    
-
+   
     controller = PedestrianController(width, height, pedestrian_loc,  
                                     targets_loc, obstacles_loc, speed, max_timesteps,devour, dijkstra, verbose_visualization)
     controller.init_costs()
