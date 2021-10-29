@@ -20,30 +20,71 @@ def runsim(filename):
         
        # Throws an exception if all of the required parameters are not available in dat file 
         if len(value)==0:
-            sys.exit('Not enough input parameters are provided. Simulation cannot run. Please update the prameter file.')
+            value = None
      
         #sets all variables required to run the controller function
         if variable == 'width':
-            width = int(value)
+            if value is not None:
+                width = int(value)
+            else:
+                 sys.exit('The parameter File must contain a widthfor the simulation size')
+                    
         elif variable == 'height':
-            height = int(value)
+            if value is not None:
+                height = int(value)
+            else:
+                sys.exit('The parameter File must contain a height for the simulation size')
+                
         elif variable == 'pedestrians_location':
-            pedestrian_loc=eval(value)
+            if value is not None:
+                pedestrian_loc=eval(value)
+            else:
+                pedestrian_loc=None
+            
         elif variable == 'targets_location':
-            targets_loc=eval(value)
+            if value is not None:
+                targets_loc=eval(value)
+            else:
+                targets_loc=None
+                
         elif variable == 'obstacles_location':
-            obstacles_loc=eval(value)
+            if value is not None:
+                obstacles_loc=eval(value)
+            else:
+                obstacles_loc=None
+            
         elif variable == 'speed':
-            speed = float(value)
+            if value is not None:
+                speed = float(value)
+            else:
+                sys.exit('The parameter File must set a speed for the pedestrians')
+                
         elif variable == 'max_timesteps':
-            max_timesteps = int(value)
+            if value is not None:
+                max_timesteps = int(value)
+            else:
+                sys.exit('The parameter File must contain the max timesteps')
+        
         elif variable == 'devour':
-            devour = bool(value)
+            if value is not None:
+                devour = bool(value)
+            else:
+                sys.exit('The parameter File must set disapearing taget to True or False')
+        
         elif variable == 'dijkstra':
-            dijkstra = bool(value)
+            if value is not None:
+                dijkstra = bool(value)
+            else:
+                sys.exit('The parameter File must set the dijkstra algorithm to True or False')
+            
+            
         elif variable == 'verbose_visualization':
-            verbose_visualization = bool(value)
-        print(len(value))
+            if value is not None:
+                verbose_visualization = bool(value)
+            else:
+                sys.exit('The parameter File must set the visualisation to True or False')
+            
+    
         
         
     infile.close()

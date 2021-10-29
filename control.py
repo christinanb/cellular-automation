@@ -22,9 +22,20 @@ class PedestrianController:
     """
     def __init__(self, width, height, pedestrians_loc, targets_loc, obstacles_loc, speed, max_timesteps, devour=False, dijkstra=False, verbose_visualization=False):
         self.field = Field(width, height)
-        self.pedestrians = [Pedestrian(self.field.cells[x, y], speed) for (x, y) in pedestrians_loc]
-        self.targets = [Target(self.field.cells[x, y]) for (x, y) in targets_loc]
-        self.obstacles = [Obstacle(self.field.cells[x, y]) for (x, y) in obstacles_loc]
+        
+        if pedestrians_loc is None:
+            self.pedestrians=[]
+        else:
+             self.pedestrians = [Pedestrian(self.field.cells[x, y], speed) for (x, y) in pedestrians_loc]
+        if targets_loc is None:
+                self.targets=[]
+        else:
+            self.targets = [Target(self.field.cells[x, y]) for (x, y) in targets_loc]
+        if obstacles_loc is None:
+            self.obstacles=[]
+        else:
+            self.obstacles = [Obstacle(self.field.cells[x, y]) for (x, y) in obstacles_loc]
+
         self.speed = speed
         self.max_timesteps = max_timesteps
         self.devour = devour
