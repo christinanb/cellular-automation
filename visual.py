@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pygame 
+import sys
 
 """
 Visualization of the Field and its objects.
@@ -69,5 +70,10 @@ class FieldVisual:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-        pygame.display.update()
+                sys.exit()
+        try:
+            pygame.display.update()
+        except:
+            pygame.quit()
+            sys.exit()
 
