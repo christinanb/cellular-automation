@@ -26,7 +26,10 @@ class PedestrianController:
         if pedestrians_loc is None:
             self.pedestrians=[]
         else:
-           self.pedestrians = [Pedestrian(self.field.cells[x, y], speed[0]) for (x, y) in pedestrians_loc]
+            if len(speed) == 1:
+                self.pedestrians = [Pedestrian(self.field.cells[x, y], speed[0]) for (x, y) in pedestrians_loc]
+            else:
+                self.pedestrians = [Pedestrian(self.field.cells[x, y], s for s in speed) for (x, y) in pedestrians_loc]
         if targets_loc is None:
             self.targets=[]
         else:
@@ -45,7 +48,7 @@ class PedestrianController:
     
     """
     Initialize the costs of targets and obstacles since these values do not change within the course of a simulation.
-    Calculate targettt-related costs according to selected target cost-calculation.
+    Calculate target-related costs according to selected target cost-calculation.
     """
     def init_costs(self):
         obstacle_cost = 1000000000
@@ -96,6 +99,14 @@ class PedestrianController:
                 min_neighbor_cost = neighbor_cost
                 optimal_neighbor = neighbor
         return optimal_neighbor
+    
+    """
+    Calculate the walking speed of the pedestrian based on age.
+
+    @param age: Age of the pedestrian.
+    """
+    def calc_speed_age(self, age):
+        pass
 
 """
 Specifies various strategies on how to calculate the cost of targets.
