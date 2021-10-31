@@ -26,17 +26,17 @@ class PedestrianController:
         if pedestrians_loc is None:
             self.pedestrians=[]
         else:
-             self.pedestrians = [Pedestrian(self.field.cells[x, y], speed) for (x, y) in pedestrians_loc]
+           self.pedestrians = [Pedestrian(self.field.cells[x, y], speed[0]) for (x, y) in pedestrians_loc]
         if targets_loc is None:
-                self.targets=[]
+            self.targets=[]
         else:
             self.targets = [Target(self.field.cells[x, y]) for (x, y) in targets_loc]
         if obstacles_loc is None:
             self.obstacles=[]
         else:
             self.obstacles = [Obstacle(self.field.cells[x, y]) for (x, y) in obstacles_loc]
-
-        self.speed = speed
+         
+        self.speed = sum(speed)/len(speed)
         self.max_timesteps = max_timesteps
         self.devour = devour
         self.target_cost_calculation = CostUpdate.dijkstra if dijkstra else CostUpdate.distance

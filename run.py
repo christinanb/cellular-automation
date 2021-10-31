@@ -55,7 +55,7 @@ def runsim(filename):
             
         elif variable == 'speed':
             if value is not None:
-                speed = float(value)
+                speed = eval(value)
             else:
                 sys.exit('The parameter File must set a speed for the pedestrians')
                 
