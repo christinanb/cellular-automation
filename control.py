@@ -27,9 +27,9 @@ class PedestrianController:
             self.pedestrians=[]
         else:
             if len(speed) == 1:
-                self.pedestrians = [Pedestrian(self.field.cells[x, y], speed[0], max_timesteps) for (x, y) in pedestrians_loc]
+                self.pedestrians = [Pedestrian(self.field.cells[x, y], speed[0], max_timesteps,i) for i, (x, y) in enumerate(pedestrians_loc)]
             else:
-                self.pedestrians = [Pedestrian(self.field.cells[x, y], speed[i], max_timesteps) for i, (x, y) in enumerate(pedestrians_loc)]
+                self.pedestrians = [Pedestrian(self.field.cells[x, y], speed[i], max_timesteps, i) for i, (x, y) in enumerate(pedestrians_loc)]
         if targets_loc is None:
             self.targets=[]
         else:
@@ -78,7 +78,7 @@ class PedestrianController:
                 p.move_in_time(optimal_neighbor)
                 # devour pedestrians who have reached a target
                 if p.cell in [t.cell for t in self.targets]:
-                    print("Elapsed time:", time.time() - p.first_movement_timestamp,  "s")
+                    print("Elapsed time:", time.time() - p.first_movement_timestamp,  "s for pedestrian #", p.identity)
                     if self.devour:
                         remove_pedestrians.append(p)
         if len(remove_pedestrians) > 0:

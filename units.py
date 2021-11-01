@@ -16,10 +16,11 @@ class Pedestrian:
     @param max_steps: Amount of steps to take.
         -1 if no step-restriction is to be applied.
     """
-    def __init__(self, cell, speed, max_steps):
+    def __init__(self, cell, speed, max_steps,i):
         self.cell = cell
         self.speed = speed
         self.steps_left = max_steps
+        self.identity= i
         self.last_movement_timestamp = time.time()
         self.next_movement_timestamp = self.last_movement_timestamp + 2
 
