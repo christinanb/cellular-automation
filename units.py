@@ -13,10 +13,13 @@ class Pedestrian:
 
     @param cell: Cell to spawn to.
     @param speed: Movement speed of pedestrian.
+    @param max_steps: Amount of steps to take.
+        -1 if no step-restriction is to be applied.
     """
-    def __init__(self, cell, speed):
+    def __init__(self, cell, speed, max_steps):
         self.cell = cell
         self.speed = speed
+        self.steps_left = max_steps
         self.last_movement_timestamp = time.time()
         self.next_movement_timestamp = self.last_movement_timestamp + 2
 
@@ -40,9 +43,10 @@ class Pedestrian:
     @param cell: Cell to move to, if possible within elapsed time since last movement.
     """
     def move_in_time(self, cell):
-        if self.time_to_move_to(cell):
+        if self.steps_left != 0 and self.time_to_move_to(cell):
             self.last_movement_timestamp = time.time()
             self.cell = cell
+            self.steps_left -= 1
 
     """
     Determines the cost of neighboring fields depending on other pedestrians.

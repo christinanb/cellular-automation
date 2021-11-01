@@ -27,9 +27,9 @@ class PedestrianController:
             self.pedestrians=[]
         else:
             if len(speed) == 1:
-                self.pedestrians = [Pedestrian(self.field.cells[x, y], speed[0]) for (x, y) in pedestrians_loc]
+                self.pedestrians = [Pedestrian(self.field.cells[x, y], speed[0], max_timesteps) for (x, y) in pedestrians_loc]
             else:
-                self.pedestrians = [Pedestrian(self.field.cells[x, y], s for s in speed) for (x, y) in pedestrians_loc]
+                self.pedestrians = [Pedestrian(self.field.cells[x, y], speed[i], max_timesteps) for i, (x, y) in enumerate(pedestrians_loc)]
         if targets_loc is None:
             self.targets=[]
         else:
@@ -73,13 +73,14 @@ class PedestrianController:
     def _update(self):
         remove_pedestrians = []
         for p in self.pedestrians:
-            optimal_neighbor = self.find_optimal_neighbor(p)
-            p.move_in_time(optimal_neighbor)
-            # devour pedestrians who have reached a target
-            if p.cell in [t.cell for t in self.targets]:
-                print("Elapsed time:", time.time() - p.first_movement_timestamp,  "s")
-                if self.devour:
-                    remove_pedestrians.append(p)
+            if not p.cell in [t.cell for t in self.targets]:
+                optimal_neighbor = self.find_optimal_neighbor(p)
+                p.move_in_time(optimal_neighbor)
+                # devour pedestrians who have reached a target
+                if p.cell in [t.cell for t in self.targets]:
+                    print("Elapsed time:", time.time() - p.first_movement_timestamp,  "s")
+                    if self.devour:
+                        remove_pedestrians.append(p)
         if len(remove_pedestrians) > 0:
             self.pedestrians = [p for p in self.pedestrians if p not in remove_pedestrians]
         self.field_visual.draw_update(self.field, self.pedestrians, self.obstacles, self.targets)
