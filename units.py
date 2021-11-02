@@ -21,10 +21,10 @@ class Pedestrian:
         self.speed = speed
         self.steps_left = max_steps
         self.identity= i
-        self.last_movement_timestamp = time.time()
-        self.next_movement_timestamp = self.last_movement_timestamp + 2
+        self.last_movement_timestamp = time.time() + 2
+        self.first_movement_timestamp = self.last_movement_timestamp
+        self.next_movement_timestamp = None
 
-        self.first_movement_timestamp = self.next_movement_timestamp
 
     """
     Checks if planned cell is reachable until the current time.
