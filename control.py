@@ -20,7 +20,7 @@ class PedestrianController:
     @param obstacles_loc: Locations of the obstacles. 
                             (x, y): x in [1, width], y in [1, height].
     """
-    def __init__(self, width, height, pedestrians_loc, targets_loc, obstacles_loc, speed, max_timesteps, devour=False, dijkstra=False, verbose_visualization=False):
+    def __init__(self, width, height, pedestrians_loc, targets_loc, obstacles_loc, speed, max_timesteps, devour=False, dijkstra=False, verbose_visualization=False, end_on_reached_targets=False):
         self.field = Field(width, height)
         
         if pedestrians_loc is None:
@@ -43,6 +43,8 @@ class PedestrianController:
         self.max_timesteps = max_timesteps
         self.devour = devour
         self.target_cost_calculation = CostUpdate.dijkstra if dijkstra else CostUpdate.distance
+        self.end_on_reached_targets = end_on_reached_targets
+        self.finishing_times = []
 
         self.field_visual = visual.FieldVisual(width, height, verbose_visualization)
     
@@ -78,12 +80,16 @@ class PedestrianController:
                 p.move_in_time(optimal_neighbor)
                 # devour pedestrians who have reached a target
                 if p.cell in [t.cell for t in self.targets]:
-                    print("Elapsed time:", time.time() - p.first_movement_timestamp,  "s for pedestrian #", p.identity)
+                    finishing_time = time.time() - p.first_movement_timestamp
+                    print("Elapsed time:", finishing_time,  "s for pedestrian #", p.identity)
+                    self.finishing_times.append(finishing_time)
                     if self.devour:
                         remove_pedestrians.append(p)
         if len(remove_pedestrians) > 0:
             self.pedestrians = [p for p in self.pedestrians if p not in remove_pedestrians]
         self.field_visual.draw_update(self.field, self.pedestrians, self.obstacles, self.targets)
+        if self.end_on_reached_targets and not self.pedestrians:
+            self.field_visual.is_running = False
 
     """
     Find the best reachable neighbor for pedestrian p according to the calculated cost-functions.
