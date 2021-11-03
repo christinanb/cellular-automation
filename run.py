@@ -96,13 +96,21 @@ def runsim(filename):
                 else:
                     verbose_visualization=bool(0)
             else:
-                sys.exit('The parameter File must set the visualisation to True or False')
-            
+                sys.exit('The parameter File must set the verbose_visualisation to True or False')
+                
+        elif variable == 'visualization':
+            if value is not None:
+                if value == 'True':
+                    visualization = bool(1)
+                else:
+                    visualization= bool(0)
+            else:
+                sys.exit('The parameter File must set the visualisation to True or False')            
     infile.close()
    
    
     controller = PedestrianController(width, height, pedestrian_loc,  
-                                    targets_loc, obstacles_loc, points_loc, speed, max_timesteps,devour, dijkstra, verbose_visualization)
+                                    targets_loc, obstacles_loc, points_loc, speed, max_timesteps,devour, dijkstra, verbose_visualization, visualization)
     controller.init_costs()
     controller.run()
 
