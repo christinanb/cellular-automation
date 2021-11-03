@@ -92,3 +92,16 @@ class Obstacle:
     """
     def __init__(self, cell):
         self.cell = cell
+
+"""
+Object which pedestrians pass for measuring a certain characteristic.
+"""
+class Point:
+
+    """
+    Create a measuring point at given cell.
+
+    @param cell: Cell on which to spawn obstacle.
+    """
+    def __init__(self, cell):
+        self.cell = cell
