@@ -118,21 +118,34 @@ class Area:
     @param bottom_right: Cell on which the desired area ends from the bottom right.
     @param density: The area's density
     """
-    def __init__(self, top_left, bottom_right, density):
+    def __init__(self, top_left, bottom_right):
         self.top_left = top_left
         self.bottom_right = bottom_right
-        self.density = density
 
         self.range_x = np.array([top_left.loc[0], bottom_right.loc[0]])
+        self.range_y = np.array([top_left.loc[1], bottom_right.loc[1]])
+
+        self.pedestrians = []
+        self.area = (self.range_x[1] - self.range_x[0]) * (self.range_y[0] - self.range_y[1])
+        self.density = len(self.pedestrians) / self.area
+        
 
     """
     Checks if a pedestrian is inside the area.
 
-    @param top_left: Cell on which the desired area starts from the top left.
-    @param bottom_right: Cell on which the desired area ends from the bottom right.
-
-    checks the x coordinate in range of 
+    @param pedestrian: Pedestrian that we want to check.
     """
     def is_inside(self, pedestrian):
-        if self.range_x[0] <= pedestrian.cell.loc[0] <= self.range_x[1]:
-            print("its in area range:", self.range_x)
+        if self.range_x[0] <= pedestrian.cell.loc[0] <= self.range_x[1] and pedestrian not in self.pedestrians:
+                self.pedestrians.append(pedestrian)
+                self.update()
+        elif pedestrian in self.pedestrians:
+            self.pedestrians.remove(pedestrian)
+            self.update()
+
+    """
+    Updates the density of the area.
+    """
+    def update(self):
+        self.density = len(self.pedestrians) / self.area
+        print(self.density)

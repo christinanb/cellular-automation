@@ -94,7 +94,14 @@ class PedestrianController:
     """
     def _update(self):
         remove_pedestrians = []
+        pedestrians_area = []
         for p in self.pedestrians:
+            if p.cell.loc[0] in [pt.cell.loc[0] for pt in self.points]:
+                #self.measure_point()
+                pass
+            # checks if pedestrian is in an area
+            for a in self.areas:
+                a.is_inside(p)
             # loops pedestrians to the left if density is being calculated
             if self.with_density and p.cell.loc[0] in [t.cell.loc[0]-1 for t in self.targets]:
                 self.pedestrians.append(Pedestrian(self.field.cells[1, p.cell.loc[1]], p.speed, p.steps_left, p.identity))
@@ -122,11 +129,12 @@ class PedestrianController:
             self.field_visual.is_running = False
             
     """
-    Measures a certain characteristic of pedestrians. In our case, density.
-    This method is executed every time a pedestrian passes through a measuring point.
+    Sets the measuring areas when calculating the density of the simulation.
+
+    @param: areas: List with coordinates for the specific areas.
     """
-    def set_areas(self, areas, densities):
-        self.areas = [Area(self.field.cells[area[0][0], area[0][1]], self.field.cells[area[1][0], area[1][1]], densities[i]) for i, area in enumerate(areas)]
+    def set_areas(self, areas):
+        self.areas = [Area(self.field.cells[area[0][0], area[0][1]], self.field.cells[area[1][0], area[1][1]]) for area in areas]
         self.with_density = True
 
     """
