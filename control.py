@@ -108,28 +108,19 @@ class PedestrianController:
                 p.move_in_time(optimal_neighbor)
                 # devour pedestrians who have reached a target
                 if p.cell in [t.cell for t in self.targets]:
-<<<<<<< HEAD
-                    self.elapsed_time= time.time() - p.first_movement_timestamp
-                    print("Elapsed time:", self.elapsed_time,  "s for pedestrian #", p.identity)
-                    
-=======
                     finishing_time = time.time() - p.first_movement_timestamp
                     print("Elapsed time:", finishing_time,  "s for pedestrian #", p.identity)
                     self.finishing_times.append(finishing_time)
->>>>>>> feebc8c2d6658c9f3cffa8044046535eedc910a6
                     if self.devour:
                         remove_pedestrians.append(p)
         if len(remove_pedestrians) > 0:
             self.pedestrians = [p for p in self.pedestrians if p not in remove_pedestrians]
-<<<<<<< HEAD
         
         if self.visualization is True:
             self.field_visual.draw_update(self.field, self.pedestrians, self.obstacles, self.targets, self.points)
         if len(remove_pedestrians)>len(self.pedestrians):
             self.sim_running=False
         
-=======
->>>>>>> feebc8c2d6658c9f3cffa8044046535eedc910a6
 
         self.field_visual.draw_update(self.field, self.pedestrians, self.obstacles, self.targets, self.points)
         if self.end_on_reached_targets and not self.pedestrians:
