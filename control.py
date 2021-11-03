@@ -22,7 +22,7 @@ class PedestrianController:
     @param points_loc: Locations of the measuring points. 
                             (x, y): x in [1, width], y in [1, height].
     """
-    def __init__(self, width, height, pedestrians_loc, targets_loc, obstacles_loc, points_loc, speed, max_timesteps, devour=False, dijkstra=False, verbose_visualization=False, visualization=False):
+    def __init__(self, width, height, pedestrians_loc, targets_loc, obstacles_loc, points_loc, speed, max_timesteps, devour=False, dijkstra=False, verbose_visualization=False, visualization=True, end_on_reached_targets=False):
         self.field = Field(width, height)
         
         if pedestrians_loc is None:
@@ -54,6 +54,7 @@ class PedestrianController:
             self.field_visual = visual.FieldVisual(width, height, verbose_visualization)
         self.elasped_time= None
         self.sim_running=True
+        self.end_on_reached_targets = end_on_reached_targets
     
     """
     Initialize the costs of targets and obstacles since these values do not change within the course of a simulation.
@@ -82,16 +83,6 @@ class PedestrianController:
             print('simulation running with no visualization')
             while self.sim_running is True:
                 self._update()
-                
-
-              
-
-
-             
-            
-             
-            
-            
 
     """
     Update the simulation once.
@@ -102,7 +93,8 @@ class PedestrianController:
         remove_pedestrians = []
         for p in self.pedestrians:
             if p.cell.loc[0] in [pt.cell.loc[0] for pt in self.points]:
-                self.measure_point()
+                #self.measure_point()
+                pass
             if not p.cell in [t.cell for t in self.targets]:
                 optimal_neighbor = self.find_optimal_neighbor(p)
                 p.move_in_time(optimal_neighbor)
@@ -121,7 +113,6 @@ class PedestrianController:
         if len(remove_pedestrians)>len(self.pedestrians):
             self.sim_running=False
         
-
         self.field_visual.draw_update(self.field, self.pedestrians, self.obstacles, self.targets, self.points)
         if self.end_on_reached_targets and not self.pedestrians:
             self.field_visual.is_running = False
