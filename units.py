@@ -137,11 +137,13 @@ class Area:
     """
     def is_inside(self, pedestrian):
         if self.range_x[0] <= pedestrian.cell.loc[0] <= self.range_x[1] and pedestrian not in self.pedestrians:
-                self.pedestrians.append(pedestrian)
-                self.update()
+            self.pedestrians.append(pedestrian)
+            self.update()
+            self.calculate_speed(pedestrian)
         elif pedestrian in self.pedestrians:
             self.pedestrians.remove(pedestrian)
             self.update()
+            self.calculate_speed(pedestrian)
 
     """
     Updates the density of the area.
@@ -149,3 +151,40 @@ class Area:
     def update(self):
         self.density = len(self.pedestrians) / self.area
         print(self.density)
+    
+    """
+    Calculates the new speed of a pedestrian depending on the area's current density.
+
+    @param pedestrian: Pedestrian that we want to change speed.
+    """
+    def calculate_speed(self, pedestrian):
+        if self.density <= 0.075:
+            pedestrian.speed = 0.21
+        elif 0.075 < self.density <= 0.2625:
+            pedestrian.speed = 0.2025
+        elif 0.2625 < self.density <= 0.45:
+            pedestrian.speed = 0.195
+        elif self.density >= 0.9:
+            pedestrian.speed = 0.18
+        """
+        if self.density <= 0.075:
+            pedestrian.speed = 0.21
+        elif 0.075 < self.density <= 0.15:
+            pedestrian.speed = ??
+        elif 0.15 < self.density <= 0.3:
+            pedestrian.speed = ??
+        elif 0.3 < self.density <= 0.45:
+            pedestrian.speed = ??
+        elif 0.45 < self.density <= 0.6:
+            pedestrian.speed = ??
+        elif 0.6 < self.density <= 0.75:
+            pedestrian.speed = ??
+        elif 0.75 < self.density <= 0.9:
+            pedestrian.speed = ??
+        elif self.density > 0.9:
+            pedestrian.speed = 0.18
+        """
+# speed = 0.18, 0.21
+# 1.2, 1.4
+#densities = [0.5, 1, 2, 3, 4, 5, 6]
+#densities = [0.075, 0.15, 0.3, 0.45, 0.6, 0.75, 0.9]
