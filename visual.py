@@ -34,7 +34,7 @@ class FieldVisual:
     @param targets: List of targets on the Field which to visualize.
     @param visualize_cost: If field costs should be visualized as well.
     """
-    def draw_update(self, field, pedestrians=[], obstacles=[], targets=[]):
+    def draw_update(self, field, pedestrians=[], obstacles=[], targets=[], points=[]):
         self.screen.fill((0, 0, 0))
 
         if self.visualize_cost:
@@ -67,6 +67,12 @@ class FieldVisual:
             y = t.cell.loc[1]*self.box_size
             rect = pygame.Rect(x, y, self.box_size, self.box_size)
             pygame.draw.rect(self.screen, (200, 0, 0), rect, 1)
+        
+        for p in points:
+            x = p.cell.loc[0]*self.box_size
+            y = p.cell.loc[1]*self.box_size
+            rect = pygame.Rect(x, y, self.box_size, self.box_size)
+            pygame.draw.rect(self.screen, (0, 51, 51), rect, 1)
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

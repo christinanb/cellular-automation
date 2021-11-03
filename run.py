@@ -52,6 +52,12 @@ def runsim(filename):
                 obstacles_loc=eval(value)
             else:
                 obstacles_loc=None
+        
+        elif variable == 'measuring_points_location':
+            if value is not None:
+                points_loc=eval(value)
+            else:
+                points_loc=None
             
         elif variable == 'speed':
             if value is not None:
@@ -82,8 +88,7 @@ def runsim(filename):
                     dijkstra=bool(0)
             else:
                 sys.exit('The parameter File must set the dijkstra algorithm to True or False')
-            
-            
+                     
         elif variable == 'verbose_visualization':
             if value is not None:
                 if value == 'True':
@@ -97,7 +102,7 @@ def runsim(filename):
    
    
     controller = PedestrianController(width, height, pedestrian_loc,  
-                                    targets_loc, obstacles_loc, speed, max_timesteps,devour, dijkstra, verbose_visualization)
+                                    targets_loc, obstacles_loc, points_loc, speed, max_timesteps,devour, dijkstra, verbose_visualization)
     controller.init_costs()
     controller.run()
 

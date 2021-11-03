@@ -19,8 +19,10 @@ class PedestrianController:
                             (x, y): x in [1, width], y in [1, height].
     @param obstacles_loc: Locations of the obstacles. 
                             (x, y): x in [1, width], y in [1, height].
+    @param points_loc: Locations of the measuring points. 
+                            (x, y): x in [1, width], y in [1, height].
     """
-    def __init__(self, width, height, pedestrians_loc, targets_loc, obstacles_loc, speed, max_timesteps, devour=False, dijkstra=False, verbose_visualization=False):
+    def __init__(self, width, height, pedestrians_loc, targets_loc, obstacles_loc, points_loc, speed, max_timesteps, devour=False, dijkstra=False, verbose_visualization=False):
         self.field = Field(width, height)
         
         if pedestrians_loc is None:
@@ -38,6 +40,10 @@ class PedestrianController:
             self.obstacles=[]
         else:
             self.obstacles = [Obstacle(self.field.cells[x, y]) for (x, y) in obstacles_loc]
+        if points_loc is None:
+            self.points=[]
+        else:
+            self.points = [Point(self.field.cells[x, y]) for (x, y) in points_loc]
          
         self.speed = sum(speed)/len(speed)
         self.max_timesteps = max_timesteps
@@ -55,6 +61,9 @@ class PedestrianController:
 
         for obstacle in self.obstacles:
             obstacle.cell.static_cost = obstacle_cost
+        
+        for p in self.points:
+            p.cell.static_cost = obstacle_cost
 
         for target in self.targets:
             self.target_cost_calculation(target.cell, self.field)
@@ -73,6 +82,8 @@ class PedestrianController:
     def _update(self):
         remove_pedestrians = []
         for p in self.pedestrians:
+            if p.cell.loc[0] in [pt.cell.loc[0] for pt in self.points]:
+                self.measure_point()
             if not p.cell in [t.cell for t in self.targets]:
                 optimal_neighbor = self.find_optimal_neighbor(p)
                 p.move_in_time(optimal_neighbor)
@@ -83,7 +94,14 @@ class PedestrianController:
                         remove_pedestrians.append(p)
         if len(remove_pedestrians) > 0:
             self.pedestrians = [p for p in self.pedestrians if p not in remove_pedestrians]
-        self.field_visual.draw_update(self.field, self.pedestrians, self.obstacles, self.targets)
+        self.field_visual.draw_update(self.field, self.pedestrians, self.obstacles, self.targets, self.points)
+
+    """
+    Measures a certain characteristic of pedestrians. In our case, density.
+    This method is executed every time a pedestrian passes through a measuring point.
+    """
+    def measure_point(self):
+        pass
 
     """
     Find the best reachable neighbor for pedestrian p according to the calculated cost-functions.
