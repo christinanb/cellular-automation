@@ -57,6 +57,8 @@ class PedestrianController:
         self.sim_running=True
         self.end_on_reached_targets = end_on_reached_targets
         self.finishing_times = []
+        self.areas = []
+        self.with_density = False
     
     """
     Initialize the costs of targets and obstacles since these values do not change within the course of a simulation.
@@ -91,13 +93,10 @@ class PedestrianController:
     This method is to be executed per time frame only by the method run().
     """
     def _update(self):
-        
         remove_pedestrians = []
         for p in self.pedestrians:
-            if p.cell.loc[0] in [pt.cell.loc[0] for pt in self.points]:
-                #self.measure_point()
-                pass
-            if p.cell.loc[0] in [t.cell.loc[0]-1 for t in self.targets]:
+            # loops pedestrians to the left if density is being calculated
+            if self.with_density and p.cell.loc[0] in [t.cell.loc[0]-1 for t in self.targets]:
                 self.pedestrians.append(Pedestrian(self.field.cells[1, p.cell.loc[1]], p.speed, p.steps_left, p.identity))
                 remove_pedestrians.append(p)
             if not p.cell in [t.cell for t in self.targets]:
@@ -126,8 +125,9 @@ class PedestrianController:
     Measures a certain characteristic of pedestrians. In our case, density.
     This method is executed every time a pedestrian passes through a measuring point.
     """
-    def measure_point(self):
-        pass
+    def set_areas(self, areas, densities):
+        self.areas = [Area(self.field.cells[area[0][0], area[0][1]], self.field.cells[area[1][0], area[1][1]], densities[i]) for i, area in enumerate(areas)]
+        self.with_density = True
 
     """
     Find the best reachable neighbor for pedestrian p according to the calculated cost-functions.
@@ -144,14 +144,6 @@ class PedestrianController:
                 min_neighbor_cost = neighbor_cost
                 optimal_neighbor = neighbor
         return optimal_neighbor
-    
-    """
-    Calculate the walking speed of the pedestrian based on age.
-
-    @param age: Age of the pedestrian.
-    """
-    def calc_speed_age(self, age):
-        pass
 
 """
 Specifies various strategies on how to calculate the cost of targets.

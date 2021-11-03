@@ -105,3 +105,34 @@ class Point:
     """
     def __init__(self, cell):
         self.cell = cell
+
+"""
+Area created from two coordinates to measure its density.
+"""
+class Area:
+
+    """
+    Creates an area with two coordinates.
+
+    @param top_left: Cell on which the desired area starts from the top left.
+    @param bottom_right: Cell on which the desired area ends from the bottom right.
+    @param density: The area's density
+    """
+    def __init__(self, top_left, bottom_right, density):
+        self.top_left = top_left
+        self.bottom_right = bottom_right
+        self.density = density
+
+        self.range_x = np.array([top_left.loc[0], bottom_right.loc[0]])
+
+    """
+    Checks if a pedestrian is inside the area.
+
+    @param top_left: Cell on which the desired area starts from the top left.
+    @param bottom_right: Cell on which the desired area ends from the bottom right.
+
+    checks the x coordinate in range of 
+    """
+    def is_inside(self, pedestrian):
+        if self.range_x[0] <= pedestrian.cell.loc[0] <= self.range_x[1]:
+            print("its in area range:", self.range_x)
