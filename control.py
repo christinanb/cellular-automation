@@ -22,7 +22,7 @@ class PedestrianController:
     @param points_loc: Locations of the measuring points. 
                             (x, y): x in [1, width], y in [1, height].
     """
-    def __init__(self, width, height, pedestrians_loc, targets_loc, obstacles_loc, points_loc, speed, max_timesteps, devour=False, dijkstra=False, verbose_visualization=False):
+    def __init__(self, width, height, pedestrians_loc, targets_loc, obstacles_loc, points_loc, speed, max_timesteps, devour=False, dijkstra=False, verbose_visualization=False, visualization=False):
         self.field = Field(width, height)
         
         if pedestrians_loc is None:
@@ -49,8 +49,11 @@ class PedestrianController:
         self.max_timesteps = max_timesteps
         self.devour = devour
         self.target_cost_calculation = CostUpdate.dijkstra if dijkstra else CostUpdate.distance
-
-        self.field_visual = visual.FieldVisual(width, height, verbose_visualization)
+        self.visualization=visualization
+        if self.visualization is True:
+            self.field_visual = visual.FieldVisual(width, height, verbose_visualization)
+        self.elasped_time= None
+        self.sim_running=True
     
     """
     Initialize the costs of targets and obstacles since these values do not change within the course of a simulation.
@@ -72,14 +75,30 @@ class PedestrianController:
     Run the simulation.
     """
     def run(self):
-        while self.field_visual.is_running:
-            self._update()
+        if self.visualization is True:
+             while self.field_visual.is_running:
+                self._update()
+        else :
+            print('simulation running with no visualization')
+            while self.sim_running is True:
+                self._update()
+                
+
+              
+
+
+             
+            
+             
+            
+            
 
     """
     Update the simulation once.
     This method is to be executed per time frame only by the method run().
     """
     def _update(self):
+        
         remove_pedestrians = []
         for p in self.pedestrians:
             if p.cell.loc[0] in [pt.cell.loc[0] for pt in self.points]:
@@ -89,12 +108,19 @@ class PedestrianController:
                 p.move_in_time(optimal_neighbor)
                 # devour pedestrians who have reached a target
                 if p.cell in [t.cell for t in self.targets]:
-                    print("Elapsed time:", time.time() - p.first_movement_timestamp,  "s for pedestrian #", p.identity)
+                    self.elapsed_time= time.time() - p.first_movement_timestamp
+                    print("Elapsed time:", self.elapsed_time,  "s for pedestrian #", p.identity)
+                    
                     if self.devour:
                         remove_pedestrians.append(p)
         if len(remove_pedestrians) > 0:
             self.pedestrians = [p for p in self.pedestrians if p not in remove_pedestrians]
-        self.field_visual.draw_update(self.field, self.pedestrians, self.obstacles, self.targets, self.points)
+        
+        if self.visualization is True:
+            self.field_visual.draw_update(self.field, self.pedestrians, self.obstacles, self.targets, self.points)
+        if len(remove_pedestrians)>len(self.pedestrians):
+            self.sim_running=False
+        
 
     """
     Measures a certain characteristic of pedestrians. In our case, density.

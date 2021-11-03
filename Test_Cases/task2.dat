@@ -9,3 +9,4 @@ max_timesteps = 25
 devour = False
 dijkstra = True
 verbose_visualization = True
+visualization = True
