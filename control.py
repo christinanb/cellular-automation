@@ -48,6 +48,7 @@ class PedestrianController:
         self.speed = sum(speed)/len(speed)
         self.max_timesteps = max_timesteps
         self.devour = devour
+        self.dijkstra = dijkstra
         self.target_cost_calculation = CostUpdate.dijkstra if dijkstra else CostUpdate.distance
         self.visualization=visualization
         if self.visualization is True:
@@ -55,6 +56,7 @@ class PedestrianController:
         self.elasped_time= None
         self.sim_running=True
         self.end_on_reached_targets = end_on_reached_targets
+        self.finishing_times = []
     
     """
     Initialize the costs of targets and obstacles since these values do not change within the course of a simulation.
@@ -95,6 +97,9 @@ class PedestrianController:
             if p.cell.loc[0] in [pt.cell.loc[0] for pt in self.points]:
                 #self.measure_point()
                 pass
+            if p.cell.loc[0] in [t.cell.loc[0]-1 for t in self.targets]:
+                self.pedestrians.append(Pedestrian(self.field.cells[1, p.cell.loc[1]], p.speed, p.steps_left, p.identity))
+                remove_pedestrians.append(p)
             if not p.cell in [t.cell for t in self.targets]:
                 optimal_neighbor = self.find_optimal_neighbor(p)
                 p.move_in_time(optimal_neighbor)
