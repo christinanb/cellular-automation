@@ -75,8 +75,8 @@ class PedestrianController:
         for obstacle in self.obstacles:
             obstacle.cell.static_cost = obstacle_cost
         
-        for p in self.points:
-            p.cell.static_cost = obstacle_cost
+        #for p in self.points:
+        #    p.cell.static_cost = obstacle_cost
 
         for target in self.targets:
             self.target_cost_calculation(target.cell, self.field)
@@ -111,7 +111,6 @@ class PedestrianController:
             if self.with_density and p.cell.loc[0] in [t.cell.loc[0]-2 for t in self.targets]:
                 self.pedestrians.append(Pedestrian(self.field.cells[1, p.cell.loc[1]], p.speed, p.steps_left, p.identity))
                 remove_pedestrians.append(p)
-                #p.cell.loc[0] = 1
             if not p.cell in [t.cell for t in self.targets]:
                 optimal_neighbor = self.find_optimal_neighbor(p)
                 p.move_in_time(optimal_neighbor)
@@ -122,6 +121,7 @@ class PedestrianController:
                     self.finishing_times.append(finishing_time)
                     if self.devour:
                         remove_pedestrians.append(p)
+        # remove pedestrians if necessary
         if len(remove_pedestrians) > 0:
             self.pedestrians = [p for p in self.pedestrians if p not in remove_pedestrians]
         
@@ -169,7 +169,7 @@ class PedestrianController:
         min_neighbor_cost = None
         optimal_neighbor = None
         for i, neighbor in enumerate(pedestrian.cell.get_avail_neighbors()):
-            neighbor_cost = neighbor.static_cost + avail_neighbor_pedestrian_costs[i] + np.linalg.norm(neighbor.loc - pedestrian.cell.loc)
+            neighbor_cost = neighbor.static_cost + avail_neighbor_pedestrian_costs[i]# + np.linalg.norm(neighbor.loc - pedestrian.cell.loc)
             if min_neighbor_cost is None or neighbor_cost < min_neighbor_cost:
                 min_neighbor_cost = neighbor_cost
                 optimal_neighbor = neighbor
