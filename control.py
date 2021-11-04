@@ -124,9 +124,7 @@ class PedestrianController:
         if len(remove_pedestrians)>len(self.pedestrians):
             self.sim_running=False
         
-        self.field_visual.draw_update(self.field, self.pedestrians, self.obstacles, self.targets, self.points)
-        if self.end_on_reached_targets and not self.pedestrians:
-            self.field_visual.is_running = False
+       
             
     """
     Sets the measuring areas when calculating the density of the simulation.
