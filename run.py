@@ -114,3 +114,6 @@ def runsim(filename):
     controller.init_costs()
     controller.run()
 
+if __name__ == "__main__":
+    file_path = input("Input file path:")
+    runsim(file_path)
