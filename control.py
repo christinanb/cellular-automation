@@ -2,6 +2,7 @@ import numpy as np
 from environment import *
 from units import *
 import visual
+import sys
 
 """
 Controls the state of the Field.
@@ -44,7 +45,7 @@ class PedestrianController:
             self.points=[]
         else:
             self.points = [Point(self.field.cells[x, y]) for (x, y) in points_loc]
-         
+        
         self.speed = sum(speed)/len(speed)
         self.max_timesteps = max_timesteps
         self.devour = devour
@@ -53,13 +54,17 @@ class PedestrianController:
         self.visualization=visualization
         if self.visualization is True:
             self.field_visual = visual.FieldVisual(width, height, verbose_visualization)
-        self.elasped_time= None
+        self.elapsed_time= None
         self.sim_running=True
         self.end_on_reached_targets = end_on_reached_targets
         self.finishing_times = []
+        
+        # Varaibles used to measure the density of areas
         self.areas = []
         self.with_density = False
-    
+        self.start_time = 0
+        self.passed_point = False
+
     """
     Initialize the costs of targets and obstacles since these values do not change within the course of a simulation.
     Calculate target-related costs according to selected target cost-calculation.
@@ -94,11 +99,11 @@ class PedestrianController:
     """
     def _update(self):
         remove_pedestrians = []
-        pedestrians_area = []
         for p in self.pedestrians:
-            if p.cell.loc[0] in [pt.cell.loc[0] for pt in self.points]:
-                #self.measure_point()
-                pass
+            # checks if pedestrian passed a measuring point
+            if not self.passed_point and p.cell.loc[0] in [pt.cell.loc[0] for pt in self.points]:
+                self.start_time = time.time()
+                self.passed_point = True
             # checks if pedestrian is in an area
             for a in self.areas:
                 a.is_inside(p)
@@ -121,12 +126,17 @@ class PedestrianController:
         
         if self.visualization is True:
             self.field_visual.draw_update(self.field, self.pedestrians, self.obstacles, self.targets, self.points)
-        if len(remove_pedestrians)>len(self.pedestrians):
-            self.sim_running=False
-        
-        self.field_visual.draw_update(self.field, self.pedestrians, self.obstacles, self.targets, self.points)
+        if len(remove_pedestrians) > len(self.pedestrians):
+            self.sim_running = False
+
         if self.end_on_reached_targets and not self.pedestrians:
             self.field_visual.is_running = False
+        
+        # After x number of seconds have passed, it terminates the program. Depends on the density value.
+        if ((time.time() - self.start_time) >= 20) and self.with_density and self.passed_point:
+            self.sim_running = False
+            if self.visualization:
+                self.field_visual.is_running = False
             
     """
     Sets the measuring areas when calculating the density of the simulation.
@@ -136,6 +146,17 @@ class PedestrianController:
     def set_areas(self, areas):
         self.areas = [Area(self.field.cells[area[0][0], area[0][1]], self.field.cells[area[1][0], area[1][1]]) for area in areas]
         self.with_density = True
+
+    """
+    Returns the coordinates (speed, density) from each measuring area.
+
+    @return: List with coordinates for speed and density
+    """
+    def get_coordinates(self):
+        coordinates = []
+        for a in self.areas:
+            coordinates.append(a.coordinates)
+        return coordinates
 
     """
     Find the best reachable neighbor for pedestrian p according to the calculated cost-functions.
