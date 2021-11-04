@@ -169,7 +169,7 @@ class PedestrianController:
         min_neighbor_cost = None
         optimal_neighbor = None
         for i, neighbor in enumerate(pedestrian.cell.get_avail_neighbors()):
-            neighbor_cost = neighbor.static_cost + avail_neighbor_pedestrian_costs[i]
+            neighbor_cost = neighbor.static_cost + avail_neighbor_pedestrian_costs[i] + np.linalg.norm(neighbor.loc - pedestrian.cell.loc)
             if min_neighbor_cost is None or neighbor_cost < min_neighbor_cost:
                 min_neighbor_cost = neighbor_cost
                 optimal_neighbor = neighbor
