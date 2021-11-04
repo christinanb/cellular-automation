@@ -134,7 +134,7 @@ class PedestrianController:
             self.field_visual.is_running = False
         
         # After x number of seconds have passed, it terminates the program. Depends on the density value.
-        if ((time.time() - self.start_time) >= 20) and self.with_density and self.passed_point:
+        if ((time.time() - self.start_time) >= 60) and self.with_density and self.passed_point:
             self.sim_running = False
             if self.visualization:
                 self.field_visual.is_running = False
