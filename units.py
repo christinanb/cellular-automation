@@ -136,12 +136,12 @@ class Area:
         self.coordinates = []
 
     """
-    Checks if a pedestrian is inside the area.
+    Checks if a pedestrian is inside the area by verifying the x coordinates.
 
     @param pedestrian: Pedestrian that we want to check.
     """
     def is_inside(self, pedestrian):
-        if self.range_x[0] <= pedestrian.cell.loc[0] <= self.range_x[1]:
+        if self.range_x[0]-1 <= pedestrian.cell.loc[0] < self.range_x[1]+1:
             if pedestrian not in self.pedestrians:
                 self.pedestrians.append(pedestrian)
                 pedestrian.enter_time = time.time()
@@ -167,5 +167,5 @@ class Area:
         elapsed_time = abs(pedestrian.exit_time - pedestrian.enter_time)
         if elapsed_time != 0:
             length = abs(self.range_x[1] - self.range_x[0])
-            speed = length / elapsed_time
+            speed = (length + 1) / elapsed_time
             self.coordinates.append([speed, self.density])
