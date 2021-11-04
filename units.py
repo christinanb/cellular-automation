@@ -158,33 +158,19 @@ class Area:
     @param pedestrian: Pedestrian that we want to change speed.
     """
     def calculate_speed(self, pedestrian):
-        if self.density <= 0.075:
-            pedestrian.speed = 0.21
-        elif 0.075 < self.density <= 0.2625:
-            pedestrian.speed = 0.2025
-        elif 0.2625 < self.density <= 0.45:
-            pedestrian.speed = 0.195
-        elif self.density >= 0.9:
-            pedestrian.speed = 0.18
-        """
-        if self.density <= 0.075:
-            pedestrian.speed = 0.21
-        elif 0.075 < self.density <= 0.15:
-            pedestrian.speed = ??
-        elif 0.15 < self.density <= 0.3:
-            pedestrian.speed = ??
-        elif 0.3 < self.density <= 0.45:
-            pedestrian.speed = ??
-        elif 0.45 < self.density <= 0.6:
-            pedestrian.speed = ??
-        elif 0.6 < self.density <= 0.75:
-            pedestrian.speed = ??
-        elif 0.75 < self.density <= 0.9:
-            pedestrian.speed = ??
-        elif self.density > 0.9:
-            pedestrian.speed = 0.18
-        """
-# speed = 0.18, 0.21
-# 1.2, 1.4
-#densities = [0.5, 1, 2, 3, 4, 5, 6]
-#densities = [0.075, 0.15, 0.3, 0.45, 0.6, 0.75, 0.9]
+        if self.density <= 0.25:
+            pedestrian.speed = 0.7
+        elif 0.25 < self.density <= 0.5:
+            pedestrian.speed = 0.6
+        elif 0.5 < self.density <= 1:
+            pedestrian.speed = 0.6
+        elif 1 < self.density <= 1.5:
+            pedestrian.speed = 0.6
+        elif 1.5 < self.density <= 2:
+            pedestrian.speed = 0.6
+        elif 2 < self.density <= 2.5:
+            pedestrian.speed = 0.6
+        elif 2.5 < self.density <= 3:
+            pedestrian.speed = 0.6
+        elif self.density > 3:
+            pedestrian.speed = 0.6
