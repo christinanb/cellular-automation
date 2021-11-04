@@ -66,8 +66,9 @@ class PedestrianController:
         self.passed_point = False
 
     """
-    Initialize the costs of targets and obstacles since these values do not change within the course of a simulation.
+    Initialize the static costs of targets and obstacles since these values do not change within the course of a simulation.
     Calculate target-related costs according to selected target cost-calculation.
+    Calculate point cost for measuring points for task 5 test 2
     """
     def init_costs(self):
         obstacle_cost = 1000000000
@@ -100,22 +101,22 @@ class PedestrianController:
     def _update(self):
         remove_pedestrians = []
         for p in self.pedestrians:
-            # checks if pedestrian passed a measuring point
+            # checks if pedestrian passed a measuring point used for task 5 test 2
             if not self.passed_point and p.cell.loc[0] in [pt.cell.loc[0] for pt in self.points]:
                 self.start_time = time.time()
                 self.passed_point = True
-            # checks if pedestrian is in an area
+            # checks if pedestrian is in an area used for task 5 test 2
             for a in self.areas:
                 a.is_inside(p)
-            # loops pedestrians to the left if density is being calculated
+            # loops pedestrians to the left if density is being calculated used for task 3 test 2
             if self.with_density and p.cell.loc[0] in [t.cell.loc[0]-2 for t in self.targets]:
                 self.pedestrians.append(Pedestrian(self.field.cells[1, p.cell.loc[1]], p.speed, p.steps_left, p.identity))
                 remove_pedestrians.append(p)
-                #p.cell.loc[0] = 1
+             #Find and move to the neighbor with the lowest cost function
             if not p.cell in [t.cell for t in self.targets]:
                 optimal_neighbor = self.find_optimal_neighbor(p)
                 p.move_in_time(optimal_neighbor)
-                # devour pedestrians who have reached a target
+                # devour pedestrians who have reached a target and print the elapsed time for individual peds
                 if p.cell in [t.cell for t in self.targets]:
                     finishing_time = time.time() - p.first_movement_timestamp
                     print("Elapsed time:", finishing_time,  "s for pedestrian #", p.identity)
@@ -124,7 +125,7 @@ class PedestrianController:
                         remove_pedestrians.append(p)
         if len(remove_pedestrians) > 0:
             self.pedestrians = [p for p in self.pedestrians if p not in remove_pedestrians]
-        
+        #Update the visulalization
         if self.visualization is True:
             self.field_visual.draw_update(self.field, self.pedestrians, self.obstacles, self.targets, self.points)
         if len(remove_pedestrians) > len(self.pedestrians):
@@ -133,7 +134,7 @@ class PedestrianController:
         if self.end_on_reached_targets and not self.pedestrians:
             self.field_visual.is_running = False
         
-        # After x number of seconds have passed, it terminates the program. Depends on the density value.
+        # After x number of seconds have passed, it terminates the program. Depends on the density value. Used for task 5 test 2
         if ((time.time() - self.start_time) >= 60) and self.with_density and self.passed_point:
             self.sim_running = False
             if self.visualization:
@@ -160,7 +161,8 @@ class PedestrianController:
         return coordinates
 
     """
-    Find the best reachable neighbor for pedestrian p according to the calculated cost-functions.
+    Find the neighboring cell for pedestrian p with the lowest calculated cost-functions.
+    Takes int account all costs including other pedestrian locations.
 
     @param pedestrian: Pedestrian to find optimal neighbor-cell for next movement.
     """
@@ -182,7 +184,7 @@ Assigns them in-place.
 class CostUpdate:
 
     """
-    Calculates the distance-cost purely depending on the euclidian distance from the target cell.
+    Calculates the distance-cost for each cell purely depending on the euclidian distance from the target cells. 
 
     @param target: Cell to calculate cost from.
     @param field: Field to operate on.
@@ -196,7 +198,9 @@ class CostUpdate:
                     cell.static_cost = np.min(costs[costs > 0])
 
     """
-    Calculates the distance-cost according to the number of steps needed to reach the target.
+    Calculates and sets the distance-cost according to the number of steps needed to reach the target from for all cells.
+    Takes into account the location of obstacles.
+    Dijkstra algorithm finds the shortest path between two nodes in a graph.
 
     @param target: Cell to calculate cost from.
     @param field: Field to operate on.

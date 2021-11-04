@@ -108,9 +108,13 @@ def runsim(filename):
                 sys.exit('The parameter File must set the visualisation to True or False')            
     infile.close()
    
-   
+   #Assign required input variables
     controller = PedestrianController(width, height, pedestrian_loc,  
                                     targets_loc, obstacles_loc, points_loc, speed, max_timesteps,devour, dijkstra, verbose_visualization, visualization)
+  
+   #Assign initial costs to all cells 
     controller.init_costs()
+
+    #applies the update steps-- controls movements of the pedestrians and visualization
     controller.run()
 

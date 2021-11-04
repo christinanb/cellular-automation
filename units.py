@@ -31,7 +31,8 @@ class Pedestrian:
 
 
     """
-    Checks if planned cell is reachable until the current time.
+    Calculates the distance to the planned neighbor cell. 
+    Checks if it is reachable until the current time.
 
     @param planned_cell: The cell which movement is planned to.
     @return: If movement is legal given elapsed time since last movement.
@@ -43,7 +44,7 @@ class Pedestrian:
         return time.time() >= self.next_movement_timestamp
 
     """
-    Moves object to cell considering the time to execute the movement.
+    Moves object to cell considering the time to execute the movement based on the distance.
 
     @param cell: Cell to move to, if possible within elapsed time since last movement.
     """
