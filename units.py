@@ -25,6 +25,10 @@ class Pedestrian:
         self.first_movement_timestamp = self.last_movement_timestamp
         self.next_movement_timestamp = None
 
+        # Used for calculation of speed with density of an area
+        self.enter_time = 0
+        self.exit_time = 0
+
 
     """
     Checks if planned cell is reachable until the current time.
@@ -128,49 +132,40 @@ class Area:
         self.pedestrians = []
         self.area = (self.range_x[1] - self.range_x[0]) * (self.range_y[0] - self.range_y[1])
         self.density = len(self.pedestrians) / self.area
-        
+
+        self.coordinates = []
 
     """
-    Checks if a pedestrian is inside the area.
+    Checks if a pedestrian is inside the area by verifying the x coordinates.
 
     @param pedestrian: Pedestrian that we want to check.
     """
     def is_inside(self, pedestrian):
-        if self.range_x[0] <= pedestrian.cell.loc[0] <= self.range_x[1] and pedestrian not in self.pedestrians:
-            self.pedestrians.append(pedestrian)
-            self.update()
-            self.calculate_speed(pedestrian)
+        if self.range_x[0]-1 <= pedestrian.cell.loc[0] < self.range_x[1]+1:
+            if pedestrian not in self.pedestrians:
+                self.pedestrians.append(pedestrian)
+                pedestrian.enter_time = time.time()
+                self.update()
         elif pedestrian in self.pedestrians:
             self.pedestrians.remove(pedestrian)
-            self.update()
+            pedestrian.exit_time = time.time()
             self.calculate_speed(pedestrian)
+            self.update()
 
     """
     Updates the density of the area.
     """
     def update(self):
         self.density = len(self.pedestrians) / self.area
-        print(self.density)
     
     """
-    Calculates the new speed of a pedestrian depending on the area's current density.
+    Calculates the new speed of a pedestrian depending on the area's length and the elapsed time.
 
-    @param pedestrian: Pedestrian that we want to change speed.
+    @param pedestrian: Pedestrian that we want to check speed.
     """
     def calculate_speed(self, pedestrian):
-        if self.density <= 0.25:
-            pedestrian.speed = 0.7
-        elif 0.25 < self.density <= 0.5:
-            pedestrian.speed = 0.6
-        elif 0.5 < self.density <= 1:
-            pedestrian.speed = 0.6
-        elif 1 < self.density <= 1.5:
-            pedestrian.speed = 0.6
-        elif 1.5 < self.density <= 2:
-            pedestrian.speed = 0.6
-        elif 2 < self.density <= 2.5:
-            pedestrian.speed = 0.6
-        elif 2.5 < self.density <= 3:
-            pedestrian.speed = 0.6
-        elif self.density > 3:
-            pedestrian.speed = 0.6
+        elapsed_time = abs(pedestrian.exit_time - pedestrian.enter_time)
+        if elapsed_time != 0:
+            length = abs(self.range_x[1] - self.range_x[0])
+            speed = (length + 1) / elapsed_time
+            self.coordinates.append([speed, self.density])

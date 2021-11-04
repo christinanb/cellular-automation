@@ -78,6 +78,7 @@ class FieldVisual:
             if event.type == pygame.QUIT:
                 pygame.quit()
                 self.is_running = False
+                break
         try:
             pygame.display.update()
         except:
