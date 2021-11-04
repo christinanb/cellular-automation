@@ -118,3 +118,6 @@ def runsim(filename):
     #applies the update steps-- controls movements of the pedestrians and visualization
     controller.run()
 
+if __name__ == "__main__":
+    file_path = input("Input file path:")
+    runsim(file_path)
