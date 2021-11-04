@@ -109,8 +109,9 @@ class PedestrianController:
                 a.is_inside(p)
             # loops pedestrians to the left if density is being calculated
             if self.with_density and p.cell.loc[0] in [t.cell.loc[0]-2 for t in self.targets]:
-                self.pedestrians.append(Pedestrian(self.field.cells[1, p.cell.loc[1]], p.speed, p.steps_left, p.identity))
-                remove_pedestrians.append(p)
+                #self.pedestrians.append(Pedestrian(self.field.cells[1, p.cell.loc[1]], p.speed, p.steps_left, p.identity))
+                #remove_pedestrians.append(p)
+                p.cell.loc[0] = 1
             if not p.cell in [t.cell for t in self.targets]:
                 optimal_neighbor = self.find_optimal_neighbor(p)
                 p.move_in_time(optimal_neighbor)
