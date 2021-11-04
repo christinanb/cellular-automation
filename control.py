@@ -109,9 +109,9 @@ class PedestrianController:
                 a.is_inside(p)
             # loops pedestrians to the left if density is being calculated
             if self.with_density and p.cell.loc[0] in [t.cell.loc[0]-2 for t in self.targets]:
-                #self.pedestrians.append(Pedestrian(self.field.cells[1, p.cell.loc[1]], p.speed, p.steps_left, p.identity))
-                #remove_pedestrians.append(p)
-                p.cell.loc[0] = 1
+                self.pedestrians.append(Pedestrian(self.field.cells[1, p.cell.loc[1]], p.speed, p.steps_left, p.identity))
+                remove_pedestrians.append(p)
+                #p.cell.loc[0] = 1
             if not p.cell in [t.cell for t in self.targets]:
                 optimal_neighbor = self.find_optimal_neighbor(p)
                 p.move_in_time(optimal_neighbor)
@@ -134,7 +134,7 @@ class PedestrianController:
             self.field_visual.is_running = False
         
         # After x number of seconds have passed, it terminates the program. Depends on the density value.
-        if ((time.time() - self.start_time) >= 20) and self.with_density and self.passed_point:
+        if ((time.time() - self.start_time) >= 60) and self.with_density and self.passed_point:
             self.sim_running = False
             if self.visualization:
                 self.field_visual.is_running = False
@@ -189,7 +189,11 @@ class CostUpdate:
     """
     def distance(target: Cell, field):
         for cell in field.cells.flatten():
-            cell.static_cost += np.linalg.norm(cell.loc - target.loc)
+            if cell.static_cost < 1000000000:
+                distance = np.linalg.norm(cell.loc - target.loc)
+                if distance > 0:
+                    costs = np.array([cell.static_cost, distance])
+                    cell.static_cost = np.min(costs[costs > 0])
 
     """
     Calculates the distance-cost according to the number of steps needed to reach the target.

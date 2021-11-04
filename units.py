@@ -141,12 +141,11 @@ class Area:
     @param pedestrian: Pedestrian that we want to check.
     """
     def is_inside(self, pedestrian):
-        if self.range_x[0]-1 <= pedestrian.cell.loc[0] < self.range_x[1]+1:
-            if pedestrian not in self.pedestrians:
+        if pedestrian.cell.loc[0] == self.range_x[0] and pedestrian not in self.pedestrians:
                 self.pedestrians.append(pedestrian)
                 pedestrian.enter_time = time.time()
                 self.update()
-        elif pedestrian in self.pedestrians:
+        elif pedestrian.cell.loc[0] == self.range_x[1] and pedestrian in self.pedestrians:
             self.pedestrians.remove(pedestrian)
             pedestrian.exit_time = time.time()
             self.calculate_speed(pedestrian)
