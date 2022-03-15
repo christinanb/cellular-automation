@@ -1,4 +1,4 @@
-A cellular automation pedistrian simulation written by Dennis Shneider, Christina Nuss-Brill, and Giovanna Barra for a machine learning practical course. 
+A cellular automation pedistrian simulation written by Dennis, Christina, and Giovanna for a machine learning practical course. 
 
 
 ### To run Simulation from Jupyter Notebook
